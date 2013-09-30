@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>List of Taxi Drivers</title>
+
+    <style type="text/css">
+      body {
+         font-family:Arial,Verdana;
+      }
+
+      table {
+         border:3px solid black;
+         margin-left:auto;
+         margin-right:auto;
+      }
+      
+      th {
+         font-weight:bold;
+         font-style:italic;
+      }
+
+      td, th {
+         border:1px solid black;
+         padding:3px;
+      }
+
+      td.info {
+         text-align:center;
+      }
+
+      #header {
+         text-align:center;
+         font-weight:bold;
+         font-size:40px;
+         margin-bottom: 15px;
+      }
+
+      #credit {
+         text-align:center;
+         font-style:italic;
+         font-size:20px;
+         margin-bottom:15px;
+      }
+
+      #sort {
+         border:2px solid black;
+         margin:10px;
+         padding:5px;
+         width:200px;
+         margin-left:auto;
+         margin-right:auto;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="header">Taxi Drivers of NYC</div>
+    <div id="credit">Data provided by <a href="https://data.cityofnewyork.us/Transportation/Yellow-Medallion-Taxicabs-Drivers/brrx-dg4s" target="_blank">NYC OpenData</a></div>
+
+    <div id="sort">
+      <strong>Sort by:</strong>
+      <br /><a href="/sort/0">License #</a>
+      <br /><a href="/sort/1">Last Name</a>
+      <br /><a href="/sort/2">First Name</a>
+    </div>
+
+    {{d|safe}}
+  </body>
+</html>
