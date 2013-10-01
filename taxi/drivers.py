@@ -11,53 +11,78 @@ app.debug = True
 
 @app.route("/")
 @app.route("/sort/<r>")
-def index(r="0"):
+@app.route("/sort/<r>/<typ>")
+def index(r="0",typ="0"):
     ret = '<table cellspacing="0">'
+
+    col = typ=="0"
+
 
     data = loadData(int(r))
 
+
+
     totalNum = len(data)
 
-    ret += '<tr><td class="info" colspan="5">Total results: <strong>'+str(totalNum)+'</strong></td></tr>'
-    ret += '<tr><th>&nbsp;</th><th>License #</th><th>Last Name</th><th>First Name</th><th>Expiration Date</th></tr>'
+    if not col:
+        data = sortData(int(r))
 
-    temp = ""
-    prev = ""
-    curNum = 0
-    for x in range(0,len(data)-1):
 
-        cur = data[int(x+1)][int(r)]
-        temp += '<tr><td class="num">'+str(x+1)+'</td>'
+
+    if col:
+
+        ret += '<tr><td class="info" colspan="5">Total results: <strong>'+str(totalNum)+'</strong></td></tr>'
+        ret += '<tr><th>&nbsp;</th><th>License #</th><th>Last Name</th><th>First Name</th><th>Expiration Date</th></tr>'
+
+        temp = ""
+        prev = ""
+        curNum = 0
+        for x in range(0,len(data)-1):
+            
+            cur = data[int(x+1)][int(r)]
+            temp += '<tr><td class="num">'+str(x+1)+'</td>'
         
-        for k in data[x]:
-            temp += "<td>"+k+"</td>"
+            for k in data[x]:
+                temp += "<td>"+k+"</td>"
 
-        temp += "</tr>"
+            temp += "</tr>"
 
-        if cur == prev:
-            curNum += 1
+            if cur == prev:
+                curNum += 1
 
-        else:
+            else:
 
-            if curNum > 1:
-                perc = "%.3f"%(float(curNum)/totalNum)
-                temp = '<tr><td class="info" colspan="5"><span class="infoTitle">'+prev+'</span> - <strong>'+str(curNum)+'</strong> results - <strong>'+perc+'%</strong></td></tr>'+temp
+                if curNum > 1:
+                    perc = "%.3f"%(float(curNum)*100/totalNum)
+                    temp = '<tr><td class="info" colspan="5"><span class="infoTitle">'+prev+'</span> - <strong>'+str(curNum)+'</strong> results - <strong>'+perc+'%</strong></td></tr>'+temp
 
 
-            curNum = 0
+                curNum = 0
+                ret += temp
+                temp = ""
+
+
+
+            prev = cur
+
+        if curNum > 1:
+            perc = "%.3f"%(float(curNum)*100/totalNum)
+            temp = '<tr><td class="info" colspan="5"><span class="infoTitle">'+cur+'</span> - <strong>'+str(curNum)+'</strong> results - <strong>'+perc+'%</strong></td></tr>'+temp
             ret += temp
-            temp = ""
+
+        ret += "</table>"
+    
 
 
+    else:
+        ret += '<tr><td class="info" colspan="4">Total results: <strong>'+str(totalNum)+'</strong></td></tr>'
+        ret += '<tr><th>&nbsp;</th><th>Name</th><th>Results</th><th>Percent</th></tr>'
 
-        prev = cur
+        for x in range(0,len(data)):
+            perc = "%.3f"%(float(data[x][1])*100/totalNum)
+            ret += '<tr><td class="num">'+str(x+1)+'</td><td>'+data[x][0]+'</td><td>'+str(data[x][1])+'</td><td>'+perc+'%</td></tr>'
 
-    if curNum > 1:
-        perc = "%.3f"%(float(curNum)/totalNum)
-        temp = '<tr><td class="info" colspan="5"><span class="infoTitle">'+cur+'</span> - <strong>'+str(curNum)+'</strong> results - <strong>'+perc+'%</strong></td></tr>'+temp
-        ret += temp
-
-    ret += "</table>"
+        ret += '</table>'
 
     return render_template("page.html",d=ret)
 
@@ -89,6 +114,29 @@ def loadData(r):
         data = sorted(data, key=itemgetter(r))
 
     return data
+
+
+
+
+def sortData(r):
+    ret = []
+
+    data = loadData(r)
+    
+    prev = ""
+    curNum = 1
+    for n in data:
+        if n[r] == prev:
+            curNum += 1
+        else:
+            ret.append([prev,curNum])
+            prev = n[r]
+            curNum = 1
+
+    ret = sorted(ret, key=itemgetter(1), reverse=True)
+
+    return ret
+
             
     
 
