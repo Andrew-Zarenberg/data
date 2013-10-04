@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>NYC Parking Regulations</title>
+
+    <style type="text/css">
+      body {
+         font-family:Arial,Verdana;
+      }
+
+      table {
+         border:3px solid black;
+         margin-left:auto;
+         margin-right:auto;
+      }
+      
+      th {
+         font-weight:bold;
+         font-style:italic;
+      }
+
+      td, th {
+         border:1px solid black;
+         padding:3px;
+      }
+
+      td.info {
+         text-align:center;
+      }
+
+      #header {
+         text-align:center;
+         font-weight:bold;
+         font-size:40px;
+         margin-bottom: 15px;
+      }
+
+      #credit {
+         text-align:center;
+         font-style:italic;
+         font-size:20px;
+         margin-bottom:15px;
+      }
+
+      #sort {
+         border:2px solid black;
+         margin:10px;
+         padding:5px;
+         width:200px;
+         margin-left:auto;
+         margin-right:auto;
+      }
+
+
+      
+      div.bar {
+         padding:0;
+         margin:0;
+         position:absolute;
+         font-size:14px;
+         background:gray;
+      }
+
+      div.barInner {
+         font-size:11px;
+      }
+
+      div.barEnd { background:black; }
+      div.noParking { background:orange; }
+      div.noStanding { background:red; }
+      div.hourParking { background:green; }
+      div.freeParking { background:#A9D0F5; }
+      div.busStop { background:red; }
+
+      div.stinfo {
+         font-weight:bold;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="header">NYC Parking Regulations</div>
+    <div id="credit">Data provided by <a href="https://data.cityofnewyork.us/data?cat=transportation">NYC OpenData</a></div>
+
+    <div id="sort">
+      <strong>Sort by:</strong>
+      <!--
+      <br /><a href="/sort/0">License #</a>
+      <br /><a href="/sort/1">Last Name</a>
+      <br /><a href="/sort/2">First Name</a>
+      <br /><a href="/sort/1/1">Most Common Last Name</a>
+      <br /><a href="/sort/2/1">Most Common First Name</a>
+      -->
+    </div>
+
+    {{d|safe}}
+  </body>
+</html>
