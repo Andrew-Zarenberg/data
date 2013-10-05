@@ -1,8 +1,19 @@
 
 
+#####
+#
+#  ANDREW ZARENBERG
+#
+#  SOFTDEV PERIOD 6
+#
+#####
+
+
+
+
 from flask import Flask
 from flask import render_template, request
-import csv, StringIO
+import csv, StringIO, re
 from operator import itemgetter
 
 
@@ -15,19 +26,21 @@ maxBarWidth = 700
 
 
 signsBlack = ["Curb Line","Property Line","Building Line"]
-signsNoStanding = ["NO STANDING ANYTIME",
+signsNoStanding = ["NO STANDING",
                    "BUS STOP",
-                   "NO STOPPING ANYTIME",
+                   "NO STOPPING",
                    "DIPLOMAT",
                    "HANDICAP BUS",
                    "AMBULETTE",
-                   "NO STANDING HOTEL LOADING ZONE",
-                   "NO STANDING /BUS",
                    "BUS LAYOVER AREA"]
-signsNoParking = ["NO PARKING ANYTIME"]
+signsNoParking = ["NO PARKING"]
 signsHourParking = ["HOUR PARKING","HR MUNI-METER"]
 signsFreeParking = ["(SANITATION BROOM SYMBOL)"]
 signsCheckNext = ["NO PARKING"]#,"Building Line"]
+
+
+dayArray = ["SUN","MON","TUES","WED","THURS","FRI","SAT"]
+
 
 
 @app.route("/")
@@ -35,7 +48,7 @@ def index():
     r = ""
 
     borough = "M"
-    street = request.args.get("street")#"34 STREET"
+    street = request.args.get("street")
 
     streets = loadStreets(borough,street)
 
@@ -138,7 +151,26 @@ def parkingArray(street,signs):
 
         if width > 0:
 
-            tmp = ["",prev,width]
+            spl = re.split('\s+',n[5])#.split(" ")
+
+            times = []
+            days = []
+            
+            for aa in spl:
+                if aa in dayArray:
+                    days.append(dayArray.index(aa))
+                elif "-" in aa:
+                    ak = aa.split("-")
+                    if re.match('\d+',ak[0]) and re.match('\d+',ak[1]):
+                        times.append(strToTime(ak[0]))
+                        times.append(strToTime(ak[1]))
+
+
+#            print(str(times))
+#            if days or times:
+#                print(str(days)+" === "+str(times))
+
+            tmp = ["",prev,width,times]
 
             if inArray(signsBlack,n[5]):
                 if count == 0:
@@ -178,17 +210,53 @@ def parkingArray(street,signs):
 def parkingbar(street,signs):
     n = parkingArray(street,signs)
 
+    
+    times = [0] # start at 0
+    for aa in n:
+        if len(aa[3]) > 0:
+            for bb in aa[3]:
+                if not bb in times:
+                    times.append(bb)
+
+    times.append(1440) # end of day
+#    print(str(times))
+
+
+    
+
     r = genSign(street,signs)
-    r += '<div class="street"><div class="stinfo">'+street[3]+'</div>'
 
-    total = 0
-    for x in range(0,len(n)):
-        r += '<div class="bar '+n[x][0]+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
-        total += n[x][2]
+    r += '<table class="streetHolder">'
 
-    k = str(total)
-#    k = str(n[len(n)-1][1]+n[len(n)-1][2])
-    r += '<div>&nbsp;</div><div class="stinfo" style="text-align:right;width:'+k+'px">'+street[4]+'</div></div>'
+    for z in range(0,len(times)-1):
+
+        r += '<tr>'
+#        r += '<div class="stinfo">'+street[3]+'</div>'
+        r += '<td class="time">'+timeToStr(times[z])+' - '+timeToStr(times[z+1])+'</td>'
+        r += '<td class="parkingbar">'
+        
+
+        total = 0
+        for x in range(0,len(n)):
+
+
+            className = "freeParking"
+            if len(n[x][3]) == 0 or (times[z] >= n[x][3][0] and times[z+1] <= n[x][3][1]):
+                className = n[x][0]
+
+            if len(n[x][3]) > 0:
+                print(className+" : "+str(times[z])+"-"+str(times[z+1])+" === "+str(n[x][3][0])+"-"+str(n[x][3][1]))
+
+            r += '<div class="bar '+className+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
+            total += n[x][2]
+
+        k = str(total)
+    #    k = str(n[len(n)-1][1]+n[len(n)-1][2])
+        r += '<div>&nbsp;</div>'
+#        r += '<div class="stinfo" style="text-align:right;width:'+k+'px">'+street[4]+'</div>'
+        r += '</td></tr>'
+        
+    r += '</table>'
 
     return r
 
@@ -261,12 +329,65 @@ def parkingbar2(street,signs):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+# Utility functions
+
 def inArray(array,string):
     for n in array:
         if n in string:
             return True
         
     return False
+
+
+def strToTime(n):
+    hour = 0
+    minute = 0
+
+    if "PM" in n:
+        hour = 12
+
+    n = n.replace("AM","").replace("PM","")
+
+    spl = n.split(":")
+    hour += int(spl[0])
+    
+    if len(spl) > 1:
+        minute = int(spl[1])
+
+    return hour*60+minute
+
+
+def timeToStr(n):
+    hour = n/60
+    minute = str(n%60)
+
+    if len(minute) == 1:
+        minute = "0"+minute
+
+    ti = "AM"
+    if hour > 11:
+        ti = "PM"
+
+    if hour > 12:
+        hour -= 12
+
+    if hour == 0:
+        hour = 12
+
+    return str(hour)+":"+minute+ti
+
+    
 
 
 
