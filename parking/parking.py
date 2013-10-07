@@ -241,6 +241,21 @@ def parkingbar(street,signs):
     r += '<table class="streetHolder">'
 #    r += <tr><td colspan="2">'+str(times)+'</td></tr>'
 
+    tmp = []
+    for z in range(0,len(times)-1):
+        tmp.append([])
+        count = 0
+        for x in range(1,len(n)):
+            if len(n[x][3]) == 0 or (times[z] >= n[x][3][0] and times[z+1] <= n[x][3][1]):
+                if count > 0 and tmp[z][count-1][0] == n[x][0]:
+                    tmp[z][count-1][2] = tmp[z][count-1][2]+n[x][2]
+                else:
+                    tmp[z].append(n[x])
+                    count += 1
+
+
+
+
     for z in range(0,len(times)-1):
 
         r += '<tr>'
@@ -251,17 +266,19 @@ def parkingbar(street,signs):
         r += '<div class="bar" style="width:'+n[0]+'px">&nbsp;</div>'
 
         total = 0
-        tmp = ""
+#        tmp = ""
 
-        for x in range(1,len(n)):
-            if len(n[x][3]) == 0 or (times[z] >= n[x][3][0] and times[z+1] <= n[x][3][1]):
-                tmp += '<div class="bar '+n[x][0]+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
-                total += n[x][2]
+#        for x in range(1,len(n)):
+#            if len(n[x][3]) == 0 or (times[z] >= n[x][3][0] and times[z+1] <= n[x][3][1]):
+#                tmp += '<div class="bar '+n[x][0]+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
+#                total += n[x][2]
 
+        for a in tmp[z]:
+            r += '<div class="bar '+a[0]+'" style="width:'+str(a[2])+'px;margin-left:'+str(a[1])+'px;">&nbsp;</div>'
 
         k = str(total)
 
-        r += tmp
+#        r += tmp
 
         r += '<div>&nbsp;</div>'
 #        r += '<div class="stinfo" style="text-align:right;width:'+k+'px">'+street[4]+'</div>'

@@ -44,7 +44,13 @@
          margin:0;
          position:absolute;
          font-size:14px;
-         background:gray;
+         background:#64FE2E;
+      }
+
+      div.barHelp {
+         padding:0;
+         margin:0;
+         font-size:14px;
       }
 
       div.barInner {
@@ -52,33 +58,68 @@
       }
 
       div.barEnd { background:black; }
-      div.noParking { background:orange; }
-      div.noStanding { background:red; }
-      div.hourParking { background:green; }
-      div.freeParking { background:#A9D0F5; }
+      div.noParking { background:#FA5858; }
+      div.noStanding { background:#8A0808; }
+      div.hourParking { 
+         background:green; 
+         background-image:linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+         background-size:20px 20px;
+      }
+      div.freeParking { background:#64FE2E; }
       div.busStop { background:red; }
 
       div.stinfo {
          font-weight:bold;
       }
+
+      div.genParking {
+      //         display:none;
+      }
+
+
+
+
+      #right {
+         margin-left:210px;
+      }
+
+      #left {
+         position:fixed;
+         border-right:5px solid black;
+         width:200px;
+         height:100%;
+         padding-top:100px;
+      }
+
     </style>
 
   </head>
   <body>
+
+    <div id="left">
+      
+      <div style="text-align:center;font-weight:bold;">Color Key</div>
+      <br /><br />
+      <strong>No Standing</strong>
+      <div class="barHelp noStanding" style="width:180px;">&nbsp;</div>
+
+      <br /><strong>No Parking</strong>
+      <div class="barHelp noParking" style="width:180px;">&nbsp;</div>
+
+      <br /><strong>Metered Parking</strong>
+      <div class="barHelp hourParking" style="width:180px;">&nbsp;</div>
+
+      <br /><strong>Free Parking</strong>
+      <div class="barHelp freeParking" style="width:180px;">&nbsp;</div>
+      
+    </div>
     <div id="header">NYC Parking Regulations</div>
     <div id="credit">Data provided by <a href="https://data.cityofnewyork.us/data?cat=transportation">NYC OpenData</a></div>
 
-    <div id="sort">
-      <strong>Sort by:</strong>
-      <!--
-      <br /><a href="/sort/0">License #</a>
-      <br /><a href="/sort/1">Last Name</a>
-      <br /><a href="/sort/2">First Name</a>
-      <br /><a href="/sort/1/1">Most Common Last Name</a>
-      <br /><a href="/sort/2/1">Most Common First Name</a>
-      -->
+    <div id="right">
+    {{d|safe}}
     </div>
 
-    {{d|safe}}
+
   </body>
 </html>
