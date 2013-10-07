@@ -24,7 +24,7 @@ app.debug = True
 
 maxBarWidth = 700
 
-
+signsSkip = ["METERS ARE NOT IN EFFECT ABOVE TIMES"]
 signsBlack = ["Curb Line","Property Line","Building Line"]
 signsNoStanding = ["NO STANDING",
                    "BUS STOP",
@@ -35,7 +35,7 @@ signsNoStanding = ["NO STANDING",
                    "BUS LAYOVER AREA"]
 signsNoParking = ["NO PARKING"]
 signsHourParking = ["HOUR PARKING","HR MUNI-METER"]
-signsFreeParking = ["(SANITATION BROOM SYMBOL)"]
+#signsFreeParking = ["(SANITATION BROOM SYMBOL)"]
 signsCheckNext = ["NO PARKING"]#,"Building Line"]
 
 
@@ -108,12 +108,14 @@ def loadSigns():
 
 def genSign(street,signs):
 
-    r = "<strong>"+street[2]+" ["+street[5]+"] between "+street[3]+" and "+street[4]+"</strong> <em>(ID: "+street[1]+")</em><ul>"
+    r = '<div class="parkingHeader"><strong>'+street[2]+' ['+street[5]+'] between '+street[3]+' and '+street[4]+'</strong> <em>(ID: '+street[1]+')</em></div><div class="genParking"><ul>'
 
     for n in signs:
         r += "<li>"+n[5]+"</li>"
 
     r += "</ul>"
+
+    r += '</div>'
 
     return r
 
@@ -128,7 +130,7 @@ def parkingArray(street,signs):
     # 4 = Free Parking
 
 
-    r = []
+    r = [0]
     signs.sort(key=lambda x:int(x[2]))
 
     totalDist = int(signs[len(signs)-1][3])
@@ -136,7 +138,7 @@ def parkingArray(street,signs):
     prev = 0
     prevTotal = 0
 
-    count = 0
+    count = 1
     
     prevWidth = 0
 
@@ -145,11 +147,13 @@ def parkingArray(street,signs):
 
         n = signs[x]
 
+
         width = int(n[3])-prev+prevWidth
         prevWidth = 0
         
 
-        if width > 0:
+#        if width > 0:
+        if True:
 
             spl = re.split('\s+',n[5])#.split(" ")
 
@@ -172,24 +176,31 @@ def parkingArray(street,signs):
 
             tmp = ["",prev,width,times]
 
-            if inArray(signsBlack,n[5]):
-                if count == 0:
-                    prevWidth = width
-                elif x+1 == len(n):
-                    r[len(r)-1][2] += width
+
+            tmp[0] = getClassName(n[5])
+            if not tmp[0]:
                 continue
-            elif inArray(signsNoStanding,n[5]):
-                tmp[0] = "noStanding"
-            elif inArray(signsNoParking,n[5]):
-                tmp[0] = "noParking"
-            elif inArray(signsHourParking,n[5]):
-                tmp[0] = "hourParking"
-            elif inArray(signsFreeParking,n[5]) and len(signs) > x and not inArray(signsHourParking,signs[x+1][5]):
-                tmp[0] = "freeParking"
-            elif inArray(signsCheckNext,n[5]) and len(signs) > x and inArray(signsHourParking,signs[x+1][5]):
-                tmp[0] = "hourParking"
+            
+            if width <= 0 and tmp[0] == "hourParking" and len(r) > 1:
+                tmp[1] = r[count-1][1]
+                tmp[2] = r[count-1][2]
+
+#            if inArray(signsBlack,n[5]):
+#                if count == 0:
+#                    prevWidth = width
+#                elif x+1 == len(n):
+#                    r[len(r)-1][2] += width
+#                continue
+#            elif inArray(signsNoStanding,n[5]):
+#                tmp[0] = "noStanding"
+#            elif inArray(signsNoParking,n[5]):
+#                tmp[0] = "noParking"
+#            elif inArray(signsHourParking,n[5]):
+#                tmp[0] = "hourParking"
+#            elif inArray(signsCheckNext,n[5]) and len(signs) > x and inArray(signsHourParking,signs[x+1][5]):
+#                tmp[0] = "hourParking"
     
-            if len(r) > 0 and r[count-1][0] == tmp[0]:
+            if len(r) > 1 and r[count-1][0] == tmp[0]:
                 r[count-1][2] = r[count-1][2]+width
             else:
                 r.append(tmp)
@@ -200,7 +211,7 @@ def parkingArray(street,signs):
             prev = int(n[3])        
                 
 
-
+    r[0] = str(prevTotal)
     
 
     return r
@@ -212,21 +223,23 @@ def parkingbar(street,signs):
 
     
     times = [0] # start at 0
-    for aa in n:
-        if len(aa[3]) > 0:
-            for bb in aa[3]:
+    for aa in range(1,len(n)):
+        if len(n[aa][3]) > 0:
+            for bb in n[aa][3]:
                 if not bb in times:
                     times.append(bb)
 
     times.append(1440) # end of day
-#    print(str(times))
 
 
+    times.sort()
     
 
     r = genSign(street,signs)
+#    r += '<div>'+str(n)+'</div>'
 
     r += '<table class="streetHolder">'
+#    r += <tr><td colspan="2">'+str(times)+'</td></tr>'
 
     for z in range(0,len(times)-1):
 
@@ -235,23 +248,21 @@ def parkingbar(street,signs):
         r += '<td class="time">'+timeToStr(times[z])+' - '+timeToStr(times[z+1])+'</td>'
         r += '<td class="parkingbar">'
         
+        r += '<div class="bar" style="width:'+n[0]+'px">&nbsp;</div>'
 
         total = 0
-        for x in range(0,len(n)):
+        tmp = ""
 
-
-            className = "freeParking"
+        for x in range(1,len(n)):
             if len(n[x][3]) == 0 or (times[z] >= n[x][3][0] and times[z+1] <= n[x][3][1]):
-                className = n[x][0]
+                tmp += '<div class="bar '+n[x][0]+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
+                total += n[x][2]
 
-            if len(n[x][3]) > 0:
-                print(className+" : "+str(times[z])+"-"+str(times[z+1])+" === "+str(n[x][3][0])+"-"+str(n[x][3][1]))
-
-            r += '<div class="bar '+className+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
-            total += n[x][2]
 
         k = str(total)
-    #    k = str(n[len(n)-1][1]+n[len(n)-1][2])
+
+        r += tmp
+
         r += '<div>&nbsp;</div>'
 #        r += '<div class="stinfo" style="text-align:right;width:'+k+'px">'+street[4]+'</div>'
         r += '</td></tr>'
@@ -259,77 +270,6 @@ def parkingbar(street,signs):
     r += '</table>'
 
     return r
-
-
-def parkingbar2(street,signs):
-    r = genSign(street,signs)
-    r += '<div class="street"><div class="stinfo">'+street[3]+'</div>'
-
-
-
-    #signs = sorted(signs, key=itemgetter(2))
-    signs.sort(key=lambda x:int(x[2]))
-
-    totalDist = int(signs[len(signs)-1][3])
-
-    prev = 0
-    prevTotal = 0
-
-
-    for x in range(0,len(signs)):
-
-        n = signs[x]
-
-        width = int(n[3])-prev
-
-
-#        width = int((float(n[3])-prev)/totalDist*barWidth)
-#        width = int((float(n[3])-prev)/totalDist)
-        #r += '<div>'+n[3]+' - '+str(totalDist)+' - '+str(n)+'</div>'
-
-
-        className = ""
-#        if "Curb Line" in n[5] or "Property Line" in n[5]:
-
-
-
-        if inArray(signsBlack,n[5]):
-            className = "barEnd"
-#        elif "NO STANDING ANYTIME" in n[5] or "BUS STOP" in n[5]:
-        elif inArray(signsNoStanding,n[5]):
-            className = "noStanding"
-#        elif "NO PARKING ANYTIME" in n[5]:
-        elif inArray(signsNoParking,n[5]):
-            className = "noParking"
-#        elif "HOUR PARKING" in n[5]:
-        elif inArray(signsHourParking,n[5]):
-            className = "hourParking"
-        elif inArray(signsFreeParking,n[5]) and len(signs) > x and not inArray(signsHourParking,signs[x+1][5]):
-            className = "freeParking"
-        elif inArray(signsCheckNext,n[5]) and len(signs) > x and inArray(signsHourParking,signs[x+1][5]):
-            className = "hourParking"
-
-
-#        r += '<div class="bar '+className+'" style="width:'+str(width)+'px;margin-left:'+str(prevTotal)+'px;">&nbsp;</div>'
-        r += '<div class="bar '+className+'" style="width:'+str(width)+'px;margin-left:'+str(prevTotal)+'px;">&nbsp;</div>'
-        
-#        prev = int(n[3])
-        prevTotal += width
-
-
-
-
-
-        prev = int(n[3])        
-
-
-    r += '<div>&nbsp;</div><div class="stinfo" style="text-align:right;width:'+str(prev)+'px">'+street[4]+'</div></div>'
-
-    return r
-
-
-
-
 
 
 
@@ -388,7 +328,17 @@ def timeToStr(n):
     return str(hour)+":"+minute+ti
 
     
-
+def getClassName(n):
+    if inArray(signsNoStanding,n):
+        return "noStanding"
+    elif inArray(signsNoParking,n):
+        return "noParking"
+    elif inArray(signsHourParking,n):
+        return "hourParking"
+    elif inArray(signsHourParking,n):
+        return "hourParking"
+    else:
+        return None
 
 
 
