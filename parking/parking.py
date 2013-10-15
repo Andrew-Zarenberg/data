@@ -20,7 +20,7 @@ from operator import itemgetter
 app = Flask(__name__)
 app.debug = True
 
-
+barOn = True#False
 
 maxBarWidth = 700
 
@@ -45,22 +45,83 @@ dayArray = ["SUN","MON","TUES","WED","THURS","FRI","SAT"]
 
 @app.route("/")
 def index():
+    r = """
+<form action="/search" method="get">
+<table>
+<tr>
+<th>Borough</th>
+<td><select name="borough">
+<option value="K">Brooklyn</option>
+<option value="M" selected>Manhattan</option>
+<option value="Q">Queens</option>
+<option value="S">Staten Island</option>
+<option value="B">The Bronx</option>
+</select></td>
+</tr><tr>
+<th>Street</th>
+<td><input name="street" size="25" /></td>
+</tr>
+<tr>
+<th>Time</th>
+<td><select name="time">
+"""
+
+    for x in range(0,47):
+        r += '<option value="'+str(x)+'">'+timeToStr(x*30)+'</option>'
+
+    r += """
+</select></td>
+</tr>
+<tr>
+<td colspan="2" style="text-align:center;"><input type="submit" value="Search" /></td>
+</tr>
+</table>
+</form>
+"""
+    return render_template("page.html",d=r)
+
+    
+
+@app.route("/search")
+def search():
     r = ""
 
-    borough = "M"
+    borough = request.args.get("borough")
+    if borough == None:
+        borough = "M"
+
     street = request.args.get("street")
+    if street == None:
+        street = "YORK AVENUE"
+
+    try:
+        time = int(request.args.get("time"))*30
+        if time < 0 or time > 1440:
+            time = 0
+    except:
+        time = 0
+
+    try:
+        time2 = int(request.args.get("time2"))*30
+        if time2 < time or time2 > 1440:
+            time2 = 1440
+    except:
+        time2 = 1440
+        
+        
 
     streets = loadStreets(borough,street)
 
     signs = loadSigns()
 
-    r = str(len(streets))+" - "+str(len(signs))
+#    r = str(len(streets))+" - "+str(len(signs))
+    r = ""
 
 #    r += "<hr />"+genSign(streets[0],signs[streets[0][1]])
     
     for x in range(0,len(streets)):
         if streets[x][1] in signs.keys():
-            r += "<hr />"+parkingbar(streets[x],signs[streets[x][1]])
+            r += "<hr />"+parkingbar(streets[x],signs[streets[x][1]],time,time2)
 
     return render_template("page.html",d=r)
 
@@ -174,12 +235,23 @@ def parkingArray(street,signs):
 #            if days or times:
 #                print(str(days)+" === "+str(times))
 
-            tmp = ["",prev,width,times]
+            tmp = ["",prev,width,times,0]
 
 
             tmp[0] = getClassName(n[5])
             if not tmp[0]:
                 continue
+
+            if tmp[0] == "hourParking":
+                k = re.split('(\d+) HR MUNI-METER',n[5])
+                if len(k) >= 2:
+                    tmp[4] = k[1]
+                else:
+                    k = re.split('(\d+) HOUR PARKING',n[5])
+                    if len(k) >= 2:
+                        tmp[4] = k[1]
+                
+                
             
             if width <= 0 and tmp[0] == "hourParking" and len(r) > 1:
                 tmp[1] = r[count-1][1]
@@ -218,18 +290,21 @@ def parkingArray(street,signs):
 
 
 
-def parkingbar(street,signs):
+def parkingbar(street,signs,t,t2):
     n = parkingArray(street,signs)
 
-    
-    times = [0] # start at 0
-    for aa in range(1,len(n)):
-        if len(n[aa][3]) > 0:
-            for bb in n[aa][3]:
-                if not bb in times:
-                    times.append(bb)
 
-    times.append(1440) # end of day
+    
+#    times = [t] # start at 0
+#    for aa in range(1,len(n)):
+#        if len(n[aa][3]) > 0:
+#            for bb in n[aa][3]:
+#                if t <= bb and bb <= t2 and not bb in times:
+#                    times.append(bb)
+#
+#    times.append(t2)
+    times = [t+1,t+1]
+
 
 
     times.sort()
@@ -237,9 +312,15 @@ def parkingbar(street,signs):
 
     r = genSign(street,signs)
 #    r += '<div>'+str(n)+'</div>'
+#    r = ""
 
-    r += '<table class="streetHolder">'
+    r += '<div class="parkingHeader"><strong>['+street[5]+'] '+street[3]+' to '+street[4]+'</strong> <span style="font-style:italic;font-size:10px;">(ID: '+street[1]+')</span></div>'
+
+    if barOn:
+        r += '<table class="streetHolder">'
+
 #    r += <tr><td colspan="2">'+str(times)+'</td></tr>'
+
 
     tmp = []
     for z in range(0,len(times)-1):
@@ -258,12 +339,14 @@ def parkingbar(street,signs):
 
     for z in range(0,len(times)-1):
 
-        r += '<tr>'
+        if barOn:
+            r += '<tr>'
 #        r += '<div class="stinfo">'+street[3]+'</div>'
-        r += '<td class="time">'+timeToStr(times[z])+' - '+timeToStr(times[z+1])+'</td>'
-        r += '<td class="parkingbar">'
-        
-        r += '<div class="bar" style="width:'+n[0]+'px">&nbsp;</div>'
+            r += '<td class="time">'+timeToStr(times[z])+' - '+timeToStr(times[z+1])+'</td>'
+            r += '<td class="parkingbar">'
+
+
+            r += '<div class="bar" style="width:'+n[0]+'px">&nbsp;</div>'
 
         total = 0
 #        tmp = ""
@@ -273,16 +356,37 @@ def parkingbar(street,signs):
 #                tmp += '<div class="bar '+n[x][0]+'" style="width:'+str(n[x][2])+'px;margin-left:'+str(n[x][1])+'px;">&nbsp;</div>'
 #                total += n[x][2]
 
+
+        hrParking = {}
         for a in tmp[z]:
-            r += '<div class="bar '+a[0]+'" style="width:'+str(a[2])+'px;margin-left:'+str(a[1])+'px;">&nbsp;</div>'
+            if barOn:
+                r += '<div class="bar '+a[0]+'" style="width:'+str(a[2])+'px;margin-left:'+str(a[1])+'px;">&nbsp;</div>'
+            if a[0] == "hourParking":
+                if not a[4] in hrParking.keys():
+                    hrParking[a[4]] = numSpots(a[2])
+                else:
+                    hrParking[a[4]] = numSpots(a[2])+hrParking[a[4]]
+#                tp.append('<div class="spot_hourParking"># Hour Meters <span class="spotCount">('+str(numSpots(a[2]))+' spots)</span></div>')
+            total += a[2]
 
         k = str(total)
 
 #        r += tmp
 
-        r += '<div>&nbsp;</div>'
+        if barOn:
+            r += '<div>&nbsp;</div>'
+
+        if int(n[0])-total > 0:
+            r += '<div class="spot_freeParking">Free Parking <span class="spotCount">('+str(numSpots(int(n[0])-total))+' spots)</span></div>'
+        elif len(hrParking) <= 0:
+            r += '<div class="spot_none">No Parking</div>'
+
+        for nn in hrParking.keys():
+            r += '<div class="spot_hourParking">'+nn+' Hour Metered Parking <span class="spotCount">('+str(hrParking[nn])+' spots)</span></div>'
+
 #        r += '<div class="stinfo" style="text-align:right;width:'+k+'px">'+street[4]+'</div>'
-        r += '</td></tr>'
+        if barOn:
+            r += '</td></tr>'
         
     r += '</table>'
 
@@ -356,6 +460,12 @@ def getClassName(n):
         return "hourParking"
     else:
         return None
+
+
+def numSpots(n):
+    spotLength = 18 # feet
+    mult = .8 # account for fire hydrants
+    return int(n*mult/spotLength)
 
 
 

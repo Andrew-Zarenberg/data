@@ -1,0 +1,421 @@
+
+
+<html>
+  <head>
+    <title>Parking Signs Test</title>
+
+    <style type="text/css">
+      body {
+         font-family:Arial,Verdana;
+      }
+
+      .sign {
+         border-width:5px;
+         border-style:solid;
+         font-weight:bold;
+         padding:0;
+         width:237px;
+         font-size:23px;
+         color:white;
+      }
+      
+      .td_topLeft {
+         font-size:48px;
+         padding:7px 7px 7px 0;
+         color:white;
+         width:50px;
+         text-align:center;
+      }
+
+      .td_header, .td_headerSmall {
+         text-align:center;
+         vertical-align:bottom;
+         padding-top:10px;
+      }
+      .td_header, .td_anytime { 
+         font-size:30px; 
+         vertical-align:top;
+      }
+      .td_headerSmall { font-size:18px; }
+      .td_anytime { text-align:center; }
+
+      .td_time {
+         text-align:center;
+         vertical-align:top;
+         padding-top:10px;
+      }
+
+      .td_holder { font-size:18px; }
+         
+      .td_time span { vertical-align:middle }
+      .td_arrow { 
+         text-align:center; 
+         padding-bottom:10px; 
+      }
+
+
+      .number, .dash { font-size:31px; }
+      .day { font-size:23px; }
+      .ampm {
+         font-size:12px; 
+         padding-top:8px;
+      }
+      .thru {
+         font-size:12px;
+         padding-left:5px;
+         padding-right:5px;
+      }
+
+      .exceptSunday { 
+         color:white; 
+         padding-top:2px;
+         padding-bottom:2px;
+         margin-left:4px;
+         margin-right:4px;
+      }
+
+      .noParking .td_topLeft { background:#94272D; }
+      .noParking { 
+         color: #94272D; 
+         border-color:#94272D;
+      }
+
+      .meterParking .td_topLeft, .meterParking .exceptSunday { background:#034F28; }
+      .meterParking { 
+         color:#034F28; 
+         border-color:#034F28;
+      }
+
+      .noStanding {
+         background:#B50F03; 
+         border:2px solid gray;
+      }
+     
+
+    </style>
+  </head>
+  <body>
+    <center><h1>Parking Signs Example</h1></center>
+
+
+
+
+
+    <strong>No Parking</strong>
+    <table><tr>
+
+
+
+
+	<td>
+	  <table class="sign noParking" cellspacing="0">
+	    <tr>
+	      <td class="td_topLeft" rowspan="2">NO</td>
+	      <td class="td_header">PARKING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time" rowspan="2">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_holder">&nbsp;</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time" colspan="2">
+		<span class="day">MON</span>
+		<span class="thru">thru</span>
+		<span class="day">FRI</span>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow" colspan="2">
+		--------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+	<td>
+	  <table class="sign noParking" cellspacing="0">
+	    <tr>
+	      <td class="td_topLeft">NO</td>
+	      <td class="td_header">PARKING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_anytime" colspan="2">
+		ANYTIME
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow" colspan="2">
+		&lt;-------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+
+
+
+    </tr></table>
+    <hr />
+    <strong>No Standing</strong>
+    <table><tr>
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<span class="day">MON</span>
+		<span class="thru">thru</span>
+		<span class="day">FRI</span>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		--------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING<br />ANYTIME</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		&lt;-------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING<br />ANYTIME<br />TAXI STAND</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		&lt;-------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT TRUCKS<br />LOADING & UNLOADING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT SUNDAY</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		--------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT<br />COMMERCIAL VEHICLES<br />METERED PARKING<br />3 HR LIMIT</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT SUNDAY</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		--------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+    </tr></table>
+    <hr />
+    <strong>No Stopping</strong>
+    <table><tr>
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STOPPING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<span class="day">MON</span>
+		<span class="thru">thru</span>
+		<span class="day">FRI</span>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		--------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+
+	<td>
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STOPPING<br />ANYTIME</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		&lt;-------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+
+
+
+
+    </tr></table>
+    <hr />
+    <strong>Metered Parking</strong>
+    <table><tr>
+
+
+
+	<td>
+	  <table class="sign meterParking" cellspacing="0">
+	    <tr>
+	      <td class="td_topLeft" rowspan="2">1</td>
+	      <td class="td_headerSmall">HOUR PARKING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time" rowspan="2">
+		<div>
+		  <span class="number">4</span>
+		  <span class="ampm">PM</span>
+		  <span class="dash">-</span>
+		  <span class="number">7</span>
+		  <span class="ampm">PM</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_holder">&nbsp;</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time" colspan="2">
+		<div class="exceptSunday">EXCEPT SUNDAY</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow" colspan="2">
+		---------&gt;
+	      </td>
+	    </tr>
+	  </table>
+	</td>
+
+	
+
+    </tr></table>
+
+
+
+
+
+  </body>
+</html>
