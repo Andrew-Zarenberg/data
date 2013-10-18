@@ -1,18 +1,9 @@
 
 
-from flask import Flask, render_template
-import signs
+<html>
+  <head>
+    <title>Parking Signs Test</title>
 
-app = Flask(__name__)
-app.debug = True
-
-@app.route("/")
-def index():
-#    return render_template("signs.html")
-
-
-    r = """
-<html><head>
     <style type="text/css">
       body {
          font-family:Arial,Verdana;
@@ -54,7 +45,7 @@ def index():
          padding-top:10px;
       }
 
-      .td_holder { font-size:5px; }
+      .td_holder { font-size:18px; }
          
       .td_time span { vertical-align:middle }
       .td_arrow { 
@@ -97,43 +88,17 @@ def index():
 
       .noStanding {
          background:#B50F03; 
-         border:2px solid gray; 
+         border:2px solid gray;
       }
-
-
      
 
     </style>
-
-</head><body>"""
-
-    d = {
-        "limit":2,
-        "time1":5,
-        "time1ap":"AM",
-        "time2":10,
-        "time2ap":"PM",
-        "days":[2,"MON","WED","FRI"],
-        "arrow":1
-        }
-
-    data = signs.formatData(d)
+  </head>
+  <body>
+    <center><h1>Parking Signs Example</h1></center>
 
 
-    r += signs.meteredParking(data)
-    r += "<br /><hr /><br />"
-    r += signs.noParking(data)
-    r += "<br /><hr /><br />"
-    r += signs.noParkingAnytime(data)
-    r += "<br /><hr /><br />"
-    r += signs.noStanding(data)
-    r += "<br /><hr /><br />"
-    r += signs.noStandingAnytime(data)
+    <br /><br />{{ d|safe }}
 
-
-    r += """</body></html>"""
-
-    return r
-
-if __name__ == "__main__":
-    app.run()
+  </body>
+</html>

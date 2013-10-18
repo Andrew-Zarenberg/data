@@ -3,9 +3,9 @@
 
 def main():
     d = {
-        "time1":4,
+        "time1":"4",
         "time1ap":"PM",
-        "time2":7,
+        "time2":"7",
         "time2ap":"PM",
         "days":[0,"MON","FRI"],
         "arrow":0
@@ -32,16 +32,16 @@ def meteredParking(d):
     return """
 	  <table class="sign meterParking" cellspacing="0">
 	    <tr>
-	      <td class="td_topLeft" rowspan="2">%(limit)d</td>
+	      <td class="td_topLeft" rowspan="2">%(limit)s</td>
 	      <td class="td_headerSmall">HOUR PARKING</td>
 	    </tr>
 	    <tr>
 	      <td class="td_time" rowspan="2">
 		<div>
-		  <span class="number">%(time1)d</span>
+		  <span class="number">%(time1)s</span>
 		  <span class="ampm">%(time1ap)s</span>
 		  <span class="dash">-</span>
-		  <span class="number">%(time2)d</span>
+		  <span class="number">%(time2)s</span>
 		  <span class="ampm">%(time2ap)s</span>
 		</div>
 	      </td>
@@ -78,7 +78,10 @@ def meteredParking(d):
 
 # NO PARKING HOURS/DAYS
 def noParking(d):
-    return """
+    if d["days"] == 1:
+        return noParkingAnytime(d)
+    else:
+        return """
 	  <table class="sign noParking" cellspacing="0">
 	    <tr>
 	      <td class="td_topLeft" rowspan="2">NO</td>
@@ -87,10 +90,10 @@ def noParking(d):
 	    <tr>
 	      <td class="td_time" rowspan="2">
 		<div>
-		  <span class="number">%(time1)d</span>
+		  <span class="number">%(time1)s</span>
 		  <span class="ampm">%(time1ap)s</span>
 		  <span class="dash">-</span>
-		  <span class="number">%(time2)d</span>
+		  <span class="number">%(time2)s</span>
 		  <span class="ampm">%(time2ap)s</span>
 		</div>
 	      </td>
@@ -147,7 +150,10 @@ def noParkingAnytime(d):
 
 # NO STANDING HOURS/DAYS
 def noStanding(d):
-    return """
+    if d["days"] == 1:
+        return noStandingAnytime(d)
+    else:
+        return """
 	  <table class="sign noStanding" cellspacing="0">
 	    <tr>
 	      <td class="td_header">NO STANDING</td>
@@ -155,10 +161,10 @@ def noStanding(d):
 	    <tr>
 	      <td class="td_time">
 		<div>
-		  <span class="number">%(time1)d</span>
+		  <span class="number">%(time1)s</span>
 		  <span class="ampm">%(time1ap)s</span>
 		  <span class="dash">-</span>
-		  <span class="number">%(time2)d</span>
+		  <span class="number">%(time2)s</span>
 		  <span class="ampm">%(time2ap)s</span>
 		</div>
 	      </td>
@@ -183,6 +189,53 @@ def noStandingAnytime(d):
 	  <table class="sign noStanding" cellspacing="0">
 	    <tr>
 	      <td class="td_header">NO STANDING<br />ANYTIME</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		%(arrow)s
+	      </td>
+	    </tr>
+	  </table>"""%(d)
+
+
+# NO STANDING ANYTIME TAXI STAND
+def noStandingAnytimeTaxi(d):
+    return """
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING<br />ANYTIME<br />TAXI STAND</td>
+	    </tr>
+	    <tr>
+	      <td class="td_arrow">
+		%(arrow)s
+	      </td>
+	    </tr>
+	  </table>"""%(d)
+
+
+# NO STANDING EXCEPT TRUCKS - LOADING & UNLOADING
+def noStandingExceptTrucks():
+    return """
+	  <table class="sign noStanding" cellspacing="0">
+	    <tr>
+	      <td class="td_header">NO STANDING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT TRUCKS<br />LOADING & UNLOADING</td>
+	    </tr>
+	    <tr>
+	      <td class="td_time">
+		<div>
+		  <span class="number">%(time1)s</span>
+		  <span class="ampm">%(time1ap)s</span>
+		  <span class="dash">-</span>
+		  <span class="number">%(time2)s</span>
+		  <span class="ampm">%(time2ap)s</span>
+		</div>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="td_headerSmall">EXCEPT SUNDAY</td>
 	    </tr>
 	    <tr>
 	      <td class="td_arrow">
@@ -218,7 +271,9 @@ def noStandingAnytime(d):
 
 
 def formatData(d):
-    if d["days"] == 2:       # EXCEPT SUNDAY
+    if d["days"] == 1:
+        pass
+    elif d["days"] == 2:       # EXCEPT SUNDAY
         d["days"] = """
 		  <div class="exceptSunday">EXCEPT SUNDAY</div>"""
     elif d["days"][0] == 0:   # THRU
